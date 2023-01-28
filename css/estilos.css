@@ -75,19 +75,40 @@ select,input {
     margin: 10px;
 }
 
+#rellenar{
+    font-size: 16px;
+    padding: 3px;
+    margin: 10px;
+    font-weight: bold;
+}
+
 #formulario{
     width: 700px;
     margin: 20px auto;
     position: relative;
 }
 
-#formulario #aniadir{
+#aniadir, #buscar, #aceptar{
     padding: 5px;
     font-size: 16px;
+    font-weight: bold;
     background-color: #3399ff;
     color:white;
+}
+
+#aniadir{
     display: block;
     margin: 20px auto;
+}
+
+#cont_botones{
+    display:flex;
+    justify-content: center;
+}
+
+#buscar, #aceptar{
+    text-align: center;
+    margin: 20px 20px;
 }
 
 h2{

@@ -32,7 +32,6 @@
             }
             ?>
 
-
             <form id="formulario" name="formulario" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                 <h2>Datos del país - lengua</h2>
                 <!--Código del país-->
@@ -45,7 +44,14 @@
                         $resultado = $conexionBD->query($consulta);
                         $registro = $resultado->fetch_object();
                         while ($registro != null) {
-                            echo '<option value="' . $registro->code . '">' . $registro->code . ' - ' . $registro->name . '</option>';
+                            //Crea la cadena a concatenar en función de si es el codigoPais añadido o no con el 
+                            //fin de no perder lo introducido en la interfaz.
+                            $seleccionado = '';
+                            if (isset($_POST['aniadir']) && $registro->code == $codigoPais) {
+                                $seleccionado = "selected";
+                            }
+                            echo '<option value="' . $registro->code . '"' . $seleccionado . '>' .
+                            $registro->code . ' - ' . $registro->name . '</option>';
                             $registro = $resultado->fetch_object();
                         }
                     }
@@ -62,7 +68,14 @@
                         $resultado = $conexionBD->query($consulta);
                         $registro = $resultado->fetch_object();
                         while ($registro != null) {
-                            echo '<option value="' . $registro->language . '">' . $registro->language . '</option>';
+                            //Crea la cadena a concatenar en función de si es el idioma añadido o no con el 
+                            //fin de no perder lo introducido en la interfaz.
+                            $seleccionado = '';
+                            if (isset($_POST['aniadir']) && $registro->language == $lengua) {
+                                $seleccionado = "selected";
+                            }
+                            echo '<option value="' . $registro->language . '"' . $seleccionado . '>' .
+                            $registro->language . '</option>';
                             $registro = $resultado->fetch_object();
                         }
                         $conexionBD->close(); //Cierra la conexión.
@@ -72,20 +85,40 @@
                 <br>
                 <!--¿El idioma es oficial?-->
                 <label for="oficial">Es oficial</label>
-                <input id="oficial" type="radio" name="oficial" value="T" checked>Si
-                <input type="radio" name="oficial" value="F">No
+                <input id="oficial" type="radio" name="oficial" value="T" <?php
+                //Chequa el campo si es lo introducido tras añadir.
+                if (isset($_POST['aniadir']) && "T" == $_POST['oficial']) {
+                    echo "checked";
+                } else if (!isset($_POST['aniadir'])) {
+                    echo "checked";
+                }
+                ?>>Si
+                <input type="radio" name="oficial" value="F" <?php
+                //Chequa el campo si es lo introducido tras añadir.
+                if (isset($_POST['aniadir']) && "F" == $_POST['oficial']) {
+                    echo "checked";
+                }
+                ?>>No
                 <br>
                 <!--Porcentaje-->
                 <label for="porcentaje">Porcentaje</label>
-                <input type="number" id="porcentaje" name="porcentaje" min="0.0" max="100.0" step="0.1" required value="0s">
+                <input type="number" id="porcentaje" name="porcentaje" min="0.0" max="100.0" step="0.1" required value="<?php
+                //Rellena el campo tras añadir para mantener el dato en la insterfaz.
+                if (isset($_POST['aniadir'])) {
+                    echo (float)$porcentaje;
+                } else {
+                    echo (float)"0.0";
+                }
+                ?>">                
                 <br>
                 <!--Botón añadir-->
                 <button type="submit" name="aniadir" id="aniadir">Añadir idioma al país</button>
             </form>
-        <?php echo $mensaje; 
+            <?php
+            echo $mensaje;
         } else {
             echo $errorConexion;
-        }      
+        }
         ?>
         <!--Volver a inicio-->
         <a class="centrado" href="index.php">Volver a inicio</a>

@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-
+<?php
+    session_start(); //Inicia las variables de sesión para su destrucción.
+    session_destroy(); //Destruye las variables de sesion.
+    session_start(); //Inicia las variables de sesión para su utilizacion.
+    $_SESSION['inicio']=true;//Inicializa  el flag de inicio.
+?>
 <html>
     <head>
         <title>Gestión de la BD World</title>

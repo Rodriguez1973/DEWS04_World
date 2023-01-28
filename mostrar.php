@@ -14,7 +14,7 @@
         //Si se ha establecido la conexión con la base de datos.
         if (isset($conexionBD)) {
             $consulta = "select p.code codigoPais, p.name nombrePais, i.language idioma, i.isOfficial 
-        oficial, round((p.population*i.percentage)/100,1) poblacion from country p inner join countrylanguage i 
+        oficial, round((p.population*i.percentage)/100) poblacion from country p inner join countrylanguage i 
         on p.code=i.countrycode order by p.code;";
             $resultado = $conexionBD->query($consulta);
             $registro = $resultado->fetch_object();
