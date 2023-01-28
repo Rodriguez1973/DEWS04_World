@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="./css/estilos.css"/>
     </head>
     <body>
+        <!--Muestra el menú de gestión de BD WORLD-->
         <h1>MENÚ DE GESTIÓN DE LA BD WORLD</h1>
         <h2 id="opciones">Opciones:</h2>
         <a href="mostrar.php">Mostrar lenguas por países</a><br>

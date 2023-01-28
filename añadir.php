@@ -21,6 +21,7 @@
                 $oficial = $_POST['oficial'];
                 $porcentaje = $_POST['porcentaje'];
                 try {
+                    //Consulta: Inserta el codigo de país, lengua, si es oficial y el porcentaje en la tabla countrylanguage.
                     $consulta = "insert into countrylanguage values ('$codigoPais', '$lengua', '$oficial', $porcentaje);";
                     $resultado = $conexionBD->query($consulta);
                     $mensaje = "<p class='mensaje'>El registro ha sido añadido correctamente.</p>";
@@ -43,9 +44,10 @@
                         $consulta = "select code, name from country order by code;";
                         $resultado = $conexionBD->query($consulta);
                         $registro = $resultado->fetch_object();
+                        //Crea las opciones de la select del código de país.
                         while ($registro != null) {
                             //Crea la cadena a concatenar en función de si es el codigoPais añadido o no con el 
-                            //fin de no perder lo introducido en la interfaz.
+                            //fin de no perder el dato introducido en la interfaz.
                             $seleccionado = '';
                             if (isset($_POST['aniadir']) && $registro->code == $codigoPais) {
                                 $seleccionado = "selected";
@@ -58,15 +60,19 @@
                     ?>
                 </select>
                 <br>
+                
                 <!--Lengua-->
                 <label for="lengua">Lengua</label>
                 <select name="lengua" id="lengua">
                     <?php
                     //Si se ha establecido la conexión con la base de datos.
                     if (isset($conexionBD)) {
+                        //Consulta: Selecciona los distintos idiomas de countrylanguage  ordenados alfabéticamente
+                        //de menor a mayor.
                         $consulta = "select distinct language from countrylanguage order by language;";
                         $resultado = $conexionBD->query($consulta);
                         $registro = $resultado->fetch_object();
+                        //Crea cada una de las option de la select.
                         while ($registro != null) {
                             //Crea la cadena a concatenar en función de si es el idioma añadido o no con el 
                             //fin de no perder lo introducido en la interfaz.
@@ -83,6 +89,7 @@
                     ?>
                 </select>
                 <br>
+                
                 <!--¿El idioma es oficial?-->
                 <label for="oficial">Es oficial</label>
                 <input id="oficial" type="radio" name="oficial" value="T" <?php
@@ -100,6 +107,7 @@
                 }
                 ?>>No
                 <br>
+                
                 <!--Porcentaje-->
                 <label for="porcentaje">Porcentaje</label>
                 <input type="number" id="porcentaje" name="porcentaje" min="0.0" max="100.0" step="0.1" required value="<?php
@@ -115,11 +123,14 @@
                 <button type="submit" name="aniadir" id="aniadir">Añadir idioma al país</button>
             </form>
             <?php
+            //Mensaje mostrado en la interfaz.
             echo $mensaje;
         } else {
+            //Mensaje de error de conexión.
             echo $errorConexion;
         }
         ?>
+        
         <!--Volver a inicio-->
         <a class="centrado" href="index.php">Volver a inicio</a>
     </body>

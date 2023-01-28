@@ -10,6 +10,7 @@
     <body>
         <h1>MODIFICACIÓN DE DATOS DE UNA LENGUA EN UN PAÍS</h1>
         <?php
+        //Inicio o reanuda la sesión.
         session_start();
         //Si es el inicio, inicializa las variables de sesión.
         if ($_SESSION['inicio']) {
@@ -21,10 +22,12 @@
             $_SESSION['buscar'] = false; //Inicializa el flag de busqueda.
             $_SESSION['inicio'] = false; //Cambia el estado de la variable de sesión de inicio.
         }
-
+        
+        //Conexión a la base de datos.
         include './conexionBD.php';
         $mensaje = "";  //Mensaje a enviar a la interfaz.
         //Si se ha pulsado en rellenar, establece la variable de sesión del código del país y rellenar.
+        //Asigna null al resto de variables de sesión para inicializarlas
         if (isset($_POST['rellenar'])) {
             $_SESSION['codigoPais'] = $_POST['codigoPais'];
             $_SESSION['rellenar'] = true;
@@ -42,16 +45,18 @@
                     $_SESSION['buscar'] = true;
                     $_SESSION['oficial'] = null;
                     $_SESSION['porcentaje'] = null;
-                    //Ha cambiado el país.
+                //Ha cambiado el país.
                 } else {
                     $_SESSION['buscar'] = false;
                     $_SESSION['rellenar'] = false;
                     $_SESSION['lengua'] = null;
                     $_SESSION['oficial'] = null;
                     $_SESSION['porcentaje'] = null;
+                    //Mensaje a pasar a la interfaz.
                     $mensaje = "<p class='mensaje'>El código de país ha cambiado.</p>";
                 }
             } else {
+                //Mensaje a pasar a la interfaz.
                 $mensaje = "<p class='mensaje'>No se han rellenado las lenguas.</p>";
             }
             //Si se ha pulsado en aceptar y está establecida la lengua.
@@ -81,6 +86,7 @@
                                     $_SESSION['oficial'] = $_POST['oficial'];
                                     $_SESSION['porcentaje'] = $_POST['porcentaje'];
                                 } else {
+                                    //Mensaje a pasar a la interfaz.
                                     $mensaje = "<p class='mensaje'>Los cambios no han sido actualizados.</p>";
                                 }
                             }
@@ -93,9 +99,11 @@
                     $_SESSION['lengua'] = null;
                     $_SESSION['oficial'] = null;
                     $_SESSION['porcentaje'] = null;
+                    //Mensaje a pasar a la interfaz.
                     $mensaje = "<p class='mensaje'>El código de país ha cambiado.</p>";
                 }
             } else {
+                //Mensaje a pasar a la interfaz.
                 $mensaje = "<p class='mensaje'>No se han rellenado las lenguas.</p>";
             }
         }
@@ -165,7 +173,8 @@
 
                 <!--Comprueba si se ha pulsado buscar-->
                 <?php
-                //Si se ha pulsado buscar, está establecida una lengua y el codigo del país no ha cambiado, se realiza la busqueda de los datos.
+                //Si se ha pulsado buscar, está establecida una lengua y el codigo del país no ha cambiado, 
+                //se realiza la busqueda de los datos.
                 if ($_SESSION['buscar']) {
                     //Consulta: Devuelve si es oficial y el porcentaje de personas que hablan un lenguaje en un determinado país.
                     $consulta = "select isofficial oficial, percentage porcentaje from countrylanguage "
@@ -232,9 +241,11 @@
                 </div>
             </form>
             <?php
+            //Muestra mensaje en la interfaz.
             echo $mensaje;
             $conexionBD->close(); //Cierra la conexión con la base de datos.
         } else {
+            //Mensaje de error de conexión.
             echo $errorConexion;
         }
         ?>
