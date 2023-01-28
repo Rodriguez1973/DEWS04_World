@@ -32,64 +32,73 @@
             $_SESSION['oficial'] = null;
             $_SESSION['porcentaje'] = null;
 
-            //Si se ha pulsado en buscar y está establecida la lengua.
-        } else if (isset($_POST['buscar']) && isset($_POST['lengua'])) {
-            //No ha cambiado el país.
-            if ($_SESSION['codigoPais'] == $_POST['codigoPais']) {
-                $_SESSION['lengua'] = $_POST['lengua'];
-                $_SESSION['buscar'] = true;
-                $_SESSION['oficial'] = null;
-                $_SESSION['porcentaje'] = null;
-                //Ha cambiado el país.
-            } else {
-                $_SESSION['buscar'] = false;
-                $_SESSION['rellenar'] = false;
-                $_SESSION['lengua'] = null;
-                $_SESSION['oficial'] = null;
-                $_SESSION['porcentaje'] = null;
-                $mensaje = "<p class='mensaje'>El código del país ha cambiado.</p>";
-            }
-
-            //Si se ha pulsado en aceptar y está establecida la lengua.
-        } else if (isset($_POST['aceptar']) && isset($_POST['lengua'])) {
-            //No ha cambiado el país y la lengua.
-            if ($_SESSION['codigoPais'] == $_POST['codigoPais'] && $_SESSION['lengua'] == $_POST['lengua'] &&
-                    isset($_POST['oficial']) && isset($_POST['porcentaje'])) {
-                //No existen cambios en oficial y porcentaje.
-                if ($_SESSION['oficial'] == $_POST['oficial'] && $_SESSION['porcentaje'] == $_POST['porcentaje']) {
-                    $mensaje = "<p class='mensaje'>No existen cambios en los datos. Actualización no realizada.</p>";
-                    //Existen cambios, se procede a la actualización.
+            //Si se ha pulsado en buscar.
+        } else if (isset($_POST['buscar'])) {
+            //Si está establecida la lengua.
+            if (isset($_POST['lengua'])) {
+                //No ha cambiado el país.
+                if ($_SESSION['codigoPais'] == $_POST['codigoPais']) {
+                    $_SESSION['lengua'] = $_POST['lengua'];
+                    $_SESSION['buscar'] = true;
+                    $_SESSION['oficial'] = null;
+                    $_SESSION['porcentaje'] = null;
+                    //Ha cambiado el país.
                 } else {
-                    //Si se ha establecido la conexión con la base de datos.
-                    if (isset($conexionBD)) {
-                        //Actualiza el porcentaje y oficial.
-                        $consulta = "update countrylanguage set isofficial='{$_POST['oficial']}', "
-                                . "percentage='{$_POST['porcentaje']}' where countrycode='{$_SESSION['codigoPais']}'"
-                                . " and language='{$_SESSION['lengua']}';";
-                        $resultado = $conexionBD->query($consulta);
-                        //La consulta se ha realizado correctamente.
-                        if ($resultado) {
-                            $mensaje = "<p class='mensaje'>Los cambios han sido registrados.</p>";
-                            $_SESSION['oficial'] = $_POST['oficial'];
-                            $_SESSION['porcentaje'] = $_POST['porcentaje'];
-                        } else {
-                            $mensaje = "<p class='mensaje'>Los cambios no han sido registrados.</p>";
-                        }
-                    }
+                    $_SESSION['buscar'] = false;
+                    $_SESSION['rellenar'] = false;
+                    $_SESSION['lengua'] = null;
+                    $_SESSION['oficial'] = null;
+                    $_SESSION['porcentaje'] = null;
+                    $mensaje = "<p class='mensaje'>El código de país ha cambiado.</p>";
                 }
-
-                //Ha cambiado el país o la lengua. No se lleva a cabo la actualización.
             } else {
-                $_SESSION['lengua'] = null;
-                $_SESSION['oficial'] = null;
-                $_SESSION['porcentaje'] = null;
-                //Si no se ha establecido la lengua
-                if (!isset($_POST['lengua'])) {
-                    $mensaje = "<p class='mensaje'>El código del país o la lengua han cambiado.</p>";
+                $mensaje = "<p class='mensaje'>No se han rellenado las lenguas.</p>";
+            }
+            //Si se ha pulsado en aceptar y está establecida la lengua.
+        } else if (isset($_POST['aceptar'])) {
+            //Si está establecida la lengua.
+            if (isset($_POST['lengua'])) {
+                //No ha cambiado el país y la lengua.
+                if ($_SESSION['codigoPais'] == $_POST['codigoPais']) {
+                    if (!$_SESSION['buscar'] || $_SESSION['lengua'] != $_POST['lengua']) {
+                        $mensaje = "<p class='mensaje'>No se ha realizado la busqueda de datos.</p>";
+                    } else if ($_SESSION['lengua'] == $_POST['lengua'] && isset($_POST['oficial']) && isset($_POST['porcentaje'])) {
+                        //No existen cambios en oficial y porcentaje.
+                        if ($_SESSION['oficial'] == $_POST['oficial'] && $_SESSION['porcentaje'] == $_POST['porcentaje']) {
+                            $mensaje = "<p class='mensaje'>No existen cambios en los datos. Actualización no realizada.</p>";
+                            //Existen cambios, se procede a la actualización.
+                        } else {
+                            //Si se ha establecido la conexión con la base de datos.
+                            if (isset($conexionBD)) {
+                                //Actualiza el porcentaje y oficial.
+                                $consulta = "update countrylanguage set isofficial='{$_POST['oficial']}', "
+                                        . "percentage='{$_POST['porcentaje']}' where countrycode='{$_SESSION['codigoPais']}'"
+                                        . " and language='{$_SESSION['lengua']}';";
+                                $resultado = $conexionBD->query($consulta);
+                                //La consulta se ha realizado correctamente.
+                                if ($resultado) {
+                                    $mensaje = "<p class='mensaje'>Los cambios han sido actualizados.</p>";
+                                    $_SESSION['oficial'] = $_POST['oficial'];
+                                    $_SESSION['porcentaje'] = $_POST['porcentaje'];
+                                } else {
+                                    $mensaje = "<p class='mensaje'>Los cambios no han sido actualizados.</p>";
+                                }
+                            }
+                        }
+                    } 
+                    //Ha cambiado el país.
+                } else {
+                    $_SESSION['buscar'] = false;
+                    $_SESSION['rellenar'] = false;
+                    $_SESSION['lengua'] = null;
+                    $_SESSION['oficial'] = null;
+                    $_SESSION['porcentaje'] = null;
+                    $mensaje = "<p class='mensaje'>El código de país ha cambiado.</p>";
                 }
+            } else {
+                $mensaje = "<p class='mensaje'>No se han rellenado las lenguas.</p>";
             }
         }
-
         //Si se ha establecido la conexión con la base de datos.
         if (isset($conexionBD)) {
             ?>
@@ -167,6 +176,9 @@
                     if ($registro) {
                         $_SESSION['oficial'] = $registro->oficial;
                         $_SESSION['porcentaje'] = $registro->porcentaje;
+                        if(!isset($_POST['aceptar'])){
+                            $mensaje = "<p class='mensaje'>Datos buscados.</p>";
+                        }
                     }
                 }
                 ?>
@@ -175,23 +187,23 @@
                 <label for="oficial">Es oficial</label>
                 <input id="oficial" type="radio" name="oficial" value="T" <?php
                 //Chequa si el campo es el recibido en la consulta.
-                if ((isset($_POST['buscar']) || isset($_POST['aceptar'])) && "T" == $_SESSION['oficial']) {
+                if ($_SESSION['buscar'] && "T" == $_SESSION['oficial']) {
                     echo "checked";
                 }
                 ?> <?php
                 //Establece el atributo disabled.
-                if ((!isset($_POST['buscar']) && !isset($_POST['aceptar'])) || !isset($_SESSION['lengua'])) {
+                if (!$_SESSION['buscar'] || !isset($_SESSION['lengua'])) {
                     echo 'disabled';
                 }
                 ?>>Si
                 <input type="radio" name="oficial" value="F" <?php
                 //Chequa si el campo es el recibido en la consulta.
-                if ((isset($_POST['buscar']) || isset($_POST['aceptar'])) && "F" == $_SESSION['oficial']) {
+                if ($_SESSION['buscar'] && "F" == $_SESSION['oficial']) {
                     echo "checked";
                 }
                 ?> <?php
                 //Establece el atributo disabled.
-                if ((!isset($_POST['buscar']) && !isset($_POST['aceptar'])) || !isset($_SESSION['lengua'])) {
+                if (!$_SESSION['buscar'] || !isset($_SESSION['lengua'])) {
                     echo 'disabled';
                 }
                 ?>>No
@@ -201,16 +213,14 @@
                 <label for="porcentaje">Porcentaje</label>
                 <input type="number" id="porcentaje" name="porcentaje" min="0.0" max="100.0" step="0.1" value="<?php
                 //Chequa si se ha establecido 'buscar' e incorpora el valor recibido de la consulta.
-                if (isset($_POST['buscar']) || isset($_POST['aceptar'])) {
+                if ($_SESSION['buscar']) {
                     echo $_SESSION['porcentaje'];
                 }
-                ?>" readonly="<?php
-                       if (isset($_POST['buscar']) || isset($_POST['aceptar'])) {
-                           echo false;
-                       } else {
-                           echo true;
+                ?>" <?php
+                       if (!$_SESSION['buscar']) {
+                           echo 'readonly';
                        }
-                       ?>">
+                       ?>>
                 <br>
 
                 <!--Botones-->
